@@ -36,6 +36,20 @@ unsigned long long    get_time(void)
     mili_sec = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
     return (mili_sec);
 }
+void write_message(mutexes *mutex, unsigned long long time,ph *philo, int id)
+{
+    pthread_mutex_lock(&mutexs.write_mutex);
+    if (id == 0)
+        printf("%llu Philosofer nb %d is thinking \n",time,philo->id);
+    else if(id == 1)
+    {
+        printf("%llu Philosofer nb %d has taken left fork %d \n",time,philo->id,philo->left_fork);
+        printf("%llu Philosofer nb %d has taken right fork %d \n",time,philo->id,philo->right_fork);
+    }
+    else if (id == 2)
+        printf("%llu Philosofer nb %d is sleeping \n",time,philo->id);
+    pthread_mutex_unlock(&mutexs.write_mutex);
+}
 
 void my_sleep(long time)
 {
@@ -46,29 +60,23 @@ void thinking(ph *philo)
 {
     
     unsigned long long time = get_time() - current_time;
-    printf("%llu Philosofer %d is thinking \n",time,philo->id);
+    write_message(philo->mutexx, time, philo, 0); 
     
-    // if (get_time() - current_time != 0) 
-    //     exit(0);
-    
-    // pthread_mutex_unlock(&mutexs.write_mutex);
 }
 void eat(ph *philo)
 {
-    unsigned long long time = get_time() - current_time;
-    
+    unsigned long long time;
     
     pthread_mutex_lock(&mutexs.forks[philo->left_fork]);
-    printf("%llu Philo nb %d taken left fork %d\n",time,philo->id, philo->left_fork);
     pthread_mutex_lock(&mutexs.forks[philo->right_fork]);
-    printf("%llu Philo nb %d taken right fork %d\n",time,philo->id, philo->right_fork);
-    // pthread_mutex_lock(&mutexs.write_mutex);
+    
+    time = get_time() - current_time;
+    write_message(philo->mutexx, time, philo, 1);
     my_sleep(60);
-
     philo->last_meal = get_time();
     pthread_mutex_unlock(&mutexs.forks[philo->left_fork]);
     pthread_mutex_unlock(&mutexs.forks[philo->right_fork]);
-    //pthread_mutex_unlock(&mutexs.write_mutex);
+    
     
 
 }
@@ -76,15 +84,10 @@ void eat(ph *philo)
 
 
 void sleeping(ph *philo)
-{
-    
+{   
     unsigned long long time = get_time() - current_time;
-    printf("%llu Philosofer %d is sleeping \n",time,philo->id);
-        while ((get_time() - philo->last_meal)
-        < (unsigned long long)60);
+    write_message(philo->mutexx, time, philo, 2);
     my_sleep(60);
-    // while ((get_time() - philo->last_meal)
-    //     < (unsigned long long)60);
 }
 
 void *routine(void *test)
@@ -112,7 +115,7 @@ int main(int argc, char **argv)
         philo[i].id = i + 1;
         philo[i].right_fork = (i + 1) % nb;
         philo[i].left_fork = i;
-        // philo[i].last_meal = get_time();
+        //philo[i] = get_time();
         i++;
     }
     mutexs.forks = malloc(sizeof(pthread_mutex_t) * nb);
@@ -128,8 +131,7 @@ int main(int argc, char **argv)
         {
             pthread_t  p1;
              philo[i].last_meal = get_time();
-             if ((philo[i].last_meal - current_time) != 0)
-                exit(0);
+
             pthread_mutex_init(&mutexs.forks[i], NULL);
             pthread_mutex_init(&mutexs.write_mutex , NULL);
             pthread_create(&p1, NULL, &routine, &philo[i]);
