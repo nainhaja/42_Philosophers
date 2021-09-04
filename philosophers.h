@@ -12,7 +12,7 @@
 typedef struct mutexes{
     pthread_mutex_t write_mutex;
     pthread_mutex_t *forks;
-    struct ph *philo;
+    struct philo *philo;
 }mutexes;
 
 typedef struct philo{
