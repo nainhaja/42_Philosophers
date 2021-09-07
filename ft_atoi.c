@@ -14,11 +14,11 @@
 
 static int	ft_espace(const char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i] == '\t' || str[i] == '\n' || str[i] == ' ')
-	{
+	{				
 		i++;
 		while (str[i] == '\f' || str[i] == '\r' || str[i] == '\v')
 			i++;
@@ -35,8 +35,8 @@ static int	ft_countnb(const char *str, int j)
 
 static int	ft_nret(char const *str, int cpt, int j)
 {
-	int cpt2;
-	int n;
+	int	cpt2;
+	int	n;
 
 	cpt2 = 1;
 	n = 0;
@@ -49,11 +49,11 @@ static int	ft_nret(char const *str, int cpt, int j)
 	return (n);
 }
 
-int			ft_atoi(const char *str)
+int	ft_atoi(const char *str)
 {
-	int j;
-	int cpt;
-	int n;
+	int	j;
+	int	cpt;
+	int	n;
 
 	n = 1;
 	j = ft_espace(str);
