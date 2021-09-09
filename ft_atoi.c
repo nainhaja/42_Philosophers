@@ -12,7 +12,7 @@
 
 #include "philosophers.h"
 
-static int	ft_espace(const char *str)
+static long	ft_espace(const char *str)
 {
 	int	i;
 
@@ -26,17 +26,17 @@ static int	ft_espace(const char *str)
 	return (i);
 }
 
-static int	ft_countnb(const char *str, int j)
+static long	ft_countnb(const char *str, long j)
 {
 	while (ft_isdigit(str[j]) == 1)
 		j++;
 	return (j);
 }
 
-static int	ft_nret(char const *str, int cpt, int j)
+static long	ft_nret(char const *str, long cpt, long j)
 {
-	int	cpt2;
-	int	n;
+	long	cpt2;
+	long	n;
 
 	cpt2 = 1;
 	n = 0;
@@ -49,11 +49,11 @@ static int	ft_nret(char const *str, int cpt, int j)
 	return (n);
 }
 
-int	ft_atoi(const char *str)
+long	ft_atoi(const char *str)
 {
-	int	j;
-	int	cpt;
-	int	n;
+	long	j;
+	long	cpt;
+	long	n;
 
 	n = 1;
 	j = ft_espace(str);
@@ -69,5 +69,9 @@ int	ft_atoi(const char *str)
 		return (0);
 	cpt = cpt - 1;
 	n = n * (ft_nret(str, cpt, j));
+	if (n > (long)2147483647 || n < (long) -2147483648)
+	{
+		return (-1);
+	}
 	return (n);
 }

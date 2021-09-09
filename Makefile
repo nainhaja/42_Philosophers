@@ -1,13 +1,13 @@
 
 CC = gcc -Wall -Wextra -Werror -o philo
 
-SRC =  ft_atoi.c ft_isdigit.c manage_threads.c philosophers.c routine.c time.c
+SRC =  ft_atoi.c ft_isdigit.c manage_threads.c philosophers.c routine.c time.c 
 
 NAME = philo
 
 all: $(NAME)
 
-$(NAME): 
+$(NAME): $(SRC)
 	$(CC) $(SRC)
 
 clean:

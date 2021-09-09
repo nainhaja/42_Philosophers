@@ -12,34 +12,28 @@
 
 #include "philosophers.h"
 
-void	init(struct philo *philo, struct mutexes *m, int nb)
+void	init(struct t_philo *philo, struct t_mutexes *m, int nb)
 {
 	m->forks = malloc(sizeof(pthread_mutex_t) * nb);
 	m->philo = philo;
 }
 
-void	creating_threads(struct philo *philo, int nb)
+void	creating_threads(struct t_philo *philo, int nb)
 {
 	int			i;
 	pthread_t	p1;
 
 	i = 0;
-	philo->mutexx->current_time = get_time();
+	philo->m->current_time = get_time();
 	while (i < nb)
 	{
 		pthread_create(&p1, NULL, &routine, &philo[i]);
-		i += 2;
-	}
-	usleep(1000);
-	i = 1;
-	while (i < nb)
-	{
-		pthread_create(&p1, NULL, &routine, &philo[i]);
-		i += 2;
+		usleep(100);
+		i++;
 	}
 }
 
-void	check_lastarg(int *flag, mutexes *m, struct philo *philo, int j)
+int	check_lastarg(int *flag, t_mutexes *m, struct t_philo *philo, int j)
 {
 	if (m->nb_meals != -1)
 	{
@@ -47,29 +41,46 @@ void	check_lastarg(int *flag, mutexes *m, struct philo *philo, int j)
 			*flag += 1;
 		if (*flag >= m->nb)
 		{
-			write_message(get_time() - m->current_time, philo, 4);
-			exit(0);
+			w_msg(get_time() - philo->m->current_time, philo, 4);
+			philo->m->flag = 0;
+			return (0);
 		}
 	}
+	return (1);
 }
 
-void	supervisor(struct philo *philo, mutexes *m)
+void	philo_died(struct t_philo *philo, int j)
 {
-	int	j;
-	int	flag;
+	pthread_mutex_lock(&philo[j].eat_mutex);
+	w_msg(get_time() - philo[j].m->current_time, &philo[j], 3);
+	pthread_mutex_unlock(&philo[j].eat_mutex);
+	philo->m->flag = 0;
+}
 
-	while (1)
+void	supervisor(struct t_philo *philo, t_mutexes *m)
+{
+	long				j;
+	int					flag;
+	unsigned long long	t;
+	unsigned long long	t_die;
+
+	t_die = m->time_todie;
+	while (philo->m->flag)
 	{
 		j = 0;
 		flag = 0;
-		while (j < m->nb)
+		while (j < philo->m->nb)
 		{
-			if (get_time() - philo[j].last_meal > m->time_todie)
+			t = get_time();
+			if (t - philo[j].last_meal >= t_die && t >= philo[j].last_meal)
 			{
-				write_message(get_time() - m->current_time, &philo[j], 3);
-				exit(0);
+				while
+				(philo[j].is_eating == 1);
+				philo_died(philo, j);
+				break ;
 			}
-			check_lastarg(&flag, m, philo, j);
+			if (check_lastarg(&flag, m, philo, j) == 0)
+				break ;
 			j++;
 		}
 	}

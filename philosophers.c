@@ -39,45 +39,64 @@ void	last_check(char **argv, int argc)
 	{
 		if (ft_checkstring(argv[i]) == 0)
 		{
-			printf("Error in Arguments \n");
-			exit(0);
+			argv[i] = "-1";
+			break ;
 		}
 		i++;
 	}
 }
 
-void	check_arg(char **argv, int argc, mutexes *m)
+void	check_arg(char **argv, int argc, struct t_philo *philo)
 {
 	if (argc == 6)
-		m->nb_meals = ft_atoi(argv[5]);
+		philo->m->nb_meals = ft_atoi(argv[5]);
 	else
-		m->nb_meals = -1;
-	m->time_todie = ft_atoi(argv[2]);
-	m->nb = ft_atoi(argv[1]);
-	last_check(argv, argc);
+		philo->m->nb_meals = -1;
+	philo->m->time_todie = ft_atoi(argv[2]);
+	philo->m->nb = ft_atoi(argv[1]);
 }
 
-void	print_error(void)
+int	ft_checkminus(char **argv, int argc)
 {
-	printf("Missing or too many arguments \n");
-	exit(0);
+	int	i;
+
+	i = 1;
+	while (i < argc)
+	{
+		if (ft_atoi(argv[i]) == -1
+			|| ft_checkstring(argv[i]) == 0 || ft_strlen(argv[i]) == 0)
+		{
+			printf("Error in arguments \n");
+			return (0);
+		}
+		i++;
+	}
+	return (1);
 }
 
 int	main(int argc, char **argv)
 {
-	struct philo	*philo;
-	mutexes			*m;
+	struct t_philo	*philo;
+	t_mutexes		*m;
 
-	m = malloc(sizeof(mutexes));
+	m = malloc(sizeof(t_mutexes));
 	if (argc == 5 || argc == 6)
 	{
-		check_arg(argv, argc, m);
-		philo = malloc(sizeof(ph) * m->nb);
-		init(philo, m, m->nb);
-		get_data(m->nb, philo, argv, m);
+		if (ft_checkminus(argv, argc) == 0 || ft_atoi(argv[1]) == 0)
+			return (0);
+		philo = malloc(sizeof(t_ph) * ft_atoi(argv[1]));
+		init(philo, m, ft_atoi(argv[1]));
+		data(ft_atoi(argv[1]), philo, argv, m);
+		check_arg(argv, argc, philo);
+		if (philo->m->nb == 0)
+			return (1);
+		philo->m->flag = 1;
 		creating_threads(philo, m->nb);
 		supervisor(philo, m);
 	}
 	else
-		print_error();
+	{
+		printf("Error in arguments \n");
+		return (0);
+	}
 }
