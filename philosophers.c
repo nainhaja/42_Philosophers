@@ -92,6 +92,7 @@ int	main(int argc, char **argv)
 			return (1);
 		philo->m->flag = 1;
 		creating_threads(philo, m->nb);
+		long_farwell(40 * 1000);
 		supervisor(philo, m);
 	}
 	else

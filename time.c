@@ -35,10 +35,7 @@ void	w_msg(unsigned long long time, struct t_philo *philo, int id)
 		return ;
 	}
 	else if (id == 4)
-	{
-		printf("%llu all the philosophers ate\n", time);
 		return ;
-	}
 	pthread_mutex_unlock(&philo->m->write_mutex);
 }
 
